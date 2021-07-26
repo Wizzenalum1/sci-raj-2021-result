@@ -26,6 +26,30 @@ let inputSchool = document.getElementById("select-school");
 let inputMin = document.getElementById("min-range");
 let inputMax = document.getElementById("max-range");
 
+// adding option to the select-district and select-school;
+let distOption = '<option value="">--------   none   --------</option>';
+console.log(cache["district-code"].length,cache["district-code"]);
+let keys = Object.keys(cache["district-code"])
+for(let key of keys){
+    distOption+=`<option value=${key}>${cache["district-code"][key]}</option>`
+}
+inputDistrict.innerHTML = distOption
+// value of schools will be selected as district-select will change.
+inputDistrict.addEventListener('change', () => {
+    console.log(inputDistrict.value)
+    let schOption =  `<option value="">--------   none   --------</option>`;
+    keys = Object.keys(cache["school-code"][inputDistrict.value])
+    for(let key of keys){
+        schOption+=`<option value=${key}>${cache["school-code"][inputDistrict.value][key]}</option>`
+    }
+    inputSchool.innerHTML = schOption
+  });
+
+
+
+
+
+
 // fuction for creating pages and single post
 
 // this function create single post.
