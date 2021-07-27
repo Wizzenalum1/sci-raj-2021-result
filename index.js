@@ -1,6 +1,7 @@
-import { db }from "./data/db.js"
+import { db }from "./data/dbtest.js"
 import { cache } from "./data/cache.js"
-/* this contains the indecies of sorted by percentage will be used to 
+/* 
+    this contains the indecies of sorted by percentage will be used to 
     db.js is an array contain all the studets with district wise and then school wise where these are increasing order of roll no.
         where one student holds following key in json object.
             db = [.........,{   "school":"##","name":"##",
@@ -26,9 +27,12 @@ let inputSchool = document.getElementById("select-school");
 let inputMin = document.getElementById("min-range");
 let inputMax = document.getElementById("max-range");
 
-// adding option to the select-district and select-school;
+console.log(cache["sorted"],cache["district-code"].length,cache["district-code"]);
+
+
+// ****  INITIALIZATION   ******* 
+//adding option to the select-district and select-school;
 let distOption = '<option value="">--------   none   --------</option>';
-console.log(cache["district-code"].length,cache["district-code"]);
 let keys = Object.keys(cache["district-code"])
 for(let key of keys){
     distOption+=`<option value=${key}>${cache["district-code"][key]}</option>`
@@ -51,14 +55,13 @@ inputDistrict.addEventListener('change', () => {
 
 
 // fuction for creating pages and single post
-
 // this function create single post.
 let createPost = async function(student){
     let post = `<div class="feature">
-          <h3>${student.name}(${student.roll_no})</h3>
-          <b>percent : ${student.percent}%</b>
+          <h3>${student[1]}(${student[2]})</h3>
+          <b>percent : ${student[0]}%</b>
           <p>school</p>
-          <small>${cache["school-code"][student.district][student["s-code"]]} </small>
+          <small>${cache["school-code"][student[3]][student[4]]} </small>
         </div>`;
     let feature = document.querySelector(".features");
     feature.innerHTML+=post;
@@ -85,7 +88,7 @@ let rangeHandler = async function(indexArray,min,max,type,district,school){
     console.log("rangeHandler is started",indexArray.length,min,max,type,district,school)
     let posts = []
     for(let index of indexArray){
-        let per = db[index]["percent"];
+        let per = db[index][0];
         // console.log(per.length>2, !isNaN(parseFloat(per)), parseFloat(per)<=max,per.length>2 && !isNaN(parseFloat(per)) && parseFloat(per)<=max)
         if(per.length>2 && !isNaN(parseFloat(per)) && parseFloat(per)<=max){
             if(parseFloat(per)<min) break
@@ -119,6 +122,57 @@ let rangeHandler = async function(indexArray,min,max,type,district,school){
     createPage(posts);
 }
 
+// // newrange handler for better performace
+// let rangeHandler = async function(indexArray,min,max,type,district,school){
+//     console.log("rangeHandler is started",indexArray.length,min,max,type,district,school)
+    
+//     let create = function(posts){
+//         console.log("newe arr is ",posts);
+//         let first_post="";
+//         console.log(first_post,type==1,type==2,type==3)
+//         if(type==1){
+//             console.log(" first post type is ", type)
+//             first_post = `<div class="feature">
+//                         <p>Total students</p>
+//                         <h1>${posts.length}</h1>
+//                         <p>District</p>
+//                         <h3>${cache["district-code"][district]} </h3>
+//                         <p>School</p>
+//                         <small>${cache["school-code"][district][school]} </small>
+//                         </div>`;
+//             document.querySelector(".features").innerHTML = first_post;
+//         }else if(type ==2){
+//             console.log(" first post type is ", type)
+//             let first_post = `<div class="feature">
+//                         <h3>Total students</h3>
+//                         <h1>${posts.length}</h1>
+//                         <p>District </p>
+//                         <h1> ${cache["district-code"][district]} </h1>
+//                         </div>`;
+//             document.querySelector(".features").innerHTML = first_post;
+//         }
+//         createPage(posts);
+//     }
+
+//     let postFunc = function(create){
+//         let posts = []
+//         for(let index of indexArray){
+//             let per = db[index][0];
+//             // console.log(per.length>2, !isNaN(parseFloat(per)), parseFloat(per)<=max,per.length>2 && !isNaN(parseFloat(per)) && parseFloat(per)<=max)
+//             if(per.length>2 && !isNaN(parseFloat(per)) && parseFloat(per)<=max){
+//                 if(parseFloat(per)<min) break
+//                 posts.push(index);            
+//             }
+//         }
+//         create(posts);
+//     }
+//     postFunc(create);
+    
+
+// }
+
+
+
 
 // this is event listner and also validate wrong inputs here
 document.getElementById("get-result").addEventListener('click',function(){
@@ -128,7 +182,7 @@ document.getElementById("get-result").addEventListener('click',function(){
     let school = inputSchool.value;
     let district = inputDistrict.value;
 // cases1 range is 0 to 100;
-    if(!isNaN(minRange) && minRange<=36 && !isNaN(maxRange) && maxRange===100){
+    if(!isNaN(minRange) && minRange<=36 && !isNaN(maxRange) && maxRange===100 && district){
         //subcase1: if schooland district is selected
         if(school && district){
             if(cache[district] && cache[district][school]){
@@ -161,7 +215,7 @@ document.getElementById("get-result").addEventListener('click',function(){
                 createPage(posts);
             }else console.log("wrong district")
         //subcase3: if nothing is selected
-        }else console.log("district is not selected")
+        }
     }
 // case2: if range is variable;
     else if( minRange && maxRange){
@@ -185,7 +239,8 @@ document.getElementById("get-result").addEventListener('click',function(){
             }else console.log("wrong district")
         //subcase3: if nothing is selected
         }else{
-            console.log("range is given")
+            console.log("only range is given")
+            console.log(cache["sorted"])
             rangeHandler(cache["sorted"],minRange,maxRange,3);
         }    
     }
