@@ -1,7 +1,6 @@
-import { db }from "./data/dbtest.js"
+import { db }from "./data/db.js"
 import { cache } from "./data/cache.js"
-/* 
-    this contains the indecies of sorted by percentage will be used to 
+/* this contains the indecies of sorted by percentage will be used to 
     db.js is an array contain all the studets with district wise and then school wise where these are increasing order of roll no.
         where one student holds following key in json object.
             db = [.........,{   "school":"##","name":"##",
@@ -27,11 +26,10 @@ let inputSchool = document.getElementById("select-school");
 let inputMin = document.getElementById("min-range");
 let inputMax = document.getElementById("max-range");
 
-console.log(cache["sorted"],cache["district-code"].length,cache["district-code"]);
+// adding option to the select-district and select-school;
+console.log(db[0][0],cache["district-code"]);
 
 
-// ****  INITIALIZATION   ******* 
-//adding option to the select-district and select-school;
 let distOption = '<option value="">--------   none   --------</option>';
 let keys = Object.keys(cache["district-code"])
 for(let key of keys){
@@ -48,13 +46,8 @@ inputDistrict.addEventListener('change', () => {
     }
     inputSchool.innerHTML = schOption
   });
-
-
-
-
-
-
 // fuction for creating pages and single post
+
 // this function create single post.
 let createPost = async function(student){
     let post = `<div class="feature">
@@ -71,27 +64,29 @@ let createPage = async function(posts){
     // console.log(posts,start);
     console.log("post creation start");
     let count = 0;
-    current_id = setInterval(function(){
-        createPost(db[posts[count]])
-        count++;
-        if(count>posts.length){
-            clearInterval(current_id);
-        }
-        console.log(count)
-    },100)
-    console.log("post creation end")
+    if(posts.length>0){
+        current_id = setInterval(function(){
+            createPost(db[posts[count]])
+            count++;
+            if(count>posts.length){
+                clearInterval(current_id);
+            }
+            console.log(count)
+        },100)
+        console.log("post creation end")
+    } else console.log(" array has 0 items so page wont create.")
 }
-
 
 // range will be handled by this only 
 let rangeHandler = async function(indexArray,min,max,type,district,school){
-    console.log("rangeHandler is started",indexArray.length,min,max,type,district,school)
+    // console.log("rangeHandler is started",indexArray.length,min,max,type,district,school)
     let posts = []
     for(let index of indexArray){
         let per = db[index][0];
+        // console.log("for loop index is",!isNaN(parseFloat(per)), parseFloat(per)<=max,"post is ",posts)
         // console.log(per.length>2, !isNaN(parseFloat(per)), parseFloat(per)<=max,per.length>2 && !isNaN(parseFloat(per)) && parseFloat(per)<=max)
-        if(per.length>2 && !isNaN(parseFloat(per)) && parseFloat(per)<=max){
-            if(parseFloat(per)<min) break
+        if(per <= max){
+            if(per < min) break
             posts.push(index);            
         }
     }
@@ -118,60 +113,18 @@ let rangeHandler = async function(indexArray,min,max,type,district,school){
                     <h1> ${cache["district-code"][district]} </h1>
                     </div>`;
         document.querySelector(".features").innerHTML = first_post;
+    }else if(type==3){
+        console.log(" first post type is ", type)
+        let first_post = `<div class="feature">
+                    <h3>Total students</h3>
+                    <h1>${posts.length}</h1>
+                    <p>Rajasthan</p>
+                    <h1> science student </h1>
+                    </div>`;
+        document.querySelector(".features").innerHTML = first_post;
     }
     createPage(posts);
 }
-
-// // newrange handler for better performace
-// let rangeHandler = async function(indexArray,min,max,type,district,school){
-//     console.log("rangeHandler is started",indexArray.length,min,max,type,district,school)
-    
-//     let create = function(posts){
-//         console.log("newe arr is ",posts);
-//         let first_post="";
-//         console.log(first_post,type==1,type==2,type==3)
-//         if(type==1){
-//             console.log(" first post type is ", type)
-//             first_post = `<div class="feature">
-//                         <p>Total students</p>
-//                         <h1>${posts.length}</h1>
-//                         <p>District</p>
-//                         <h3>${cache["district-code"][district]} </h3>
-//                         <p>School</p>
-//                         <small>${cache["school-code"][district][school]} </small>
-//                         </div>`;
-//             document.querySelector(".features").innerHTML = first_post;
-//         }else if(type ==2){
-//             console.log(" first post type is ", type)
-//             let first_post = `<div class="feature">
-//                         <h3>Total students</h3>
-//                         <h1>${posts.length}</h1>
-//                         <p>District </p>
-//                         <h1> ${cache["district-code"][district]} </h1>
-//                         </div>`;
-//             document.querySelector(".features").innerHTML = first_post;
-//         }
-//         createPage(posts);
-//     }
-
-//     let postFunc = function(create){
-//         let posts = []
-//         for(let index of indexArray){
-//             let per = db[index][0];
-//             // console.log(per.length>2, !isNaN(parseFloat(per)), parseFloat(per)<=max,per.length>2 && !isNaN(parseFloat(per)) && parseFloat(per)<=max)
-//             if(per.length>2 && !isNaN(parseFloat(per)) && parseFloat(per)<=max){
-//                 if(parseFloat(per)<min) break
-//                 posts.push(index);            
-//             }
-//         }
-//         create(posts);
-//     }
-//     postFunc(create);
-    
-
-// }
-
-
 
 
 // this is event listner and also validate wrong inputs here
@@ -215,7 +168,7 @@ document.getElementById("get-result").addEventListener('click',function(){
                 createPage(posts);
             }else console.log("wrong district")
         //subcase3: if nothing is selected
-        }
+        }else console.log("district is not selected")
     }
 // case2: if range is variable;
     else if( minRange && maxRange){
@@ -239,8 +192,7 @@ document.getElementById("get-result").addEventListener('click',function(){
             }else console.log("wrong district")
         //subcase3: if nothing is selected
         }else{
-            console.log("only range is given")
-            console.log(cache["sorted"])
+            console.log("range is given")
             rangeHandler(cache["sorted"],minRange,maxRange,3);
         }    
     }
@@ -248,5 +200,7 @@ document.getElementById("get-result").addEventListener('click',function(){
         console.log("some technical issue is occured")
     }
 })
+
+
 
 

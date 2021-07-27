@@ -18,8 +18,10 @@ body {
 /* select */
 #query{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px,300px));
+    grid-template-columns: 80%;
     gap:10px 30px;
+    justify-content: center;
+    color:rgb(68, 60, 46);
 }
 #query>div>label{
     font-size: 1.1em;
@@ -31,6 +33,9 @@ body {
 }
 #range>div>input{
     width:100px;
+}
+#range>div>select{
+  font-size: .5em;
 }
 
   /* Features! */
