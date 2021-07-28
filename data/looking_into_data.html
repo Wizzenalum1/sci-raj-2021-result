@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Look in to the db file</h1>
+    <h2>here testing for best compression of my data for sample size of 2 lakh instances</h2>
+    <ol>
+        <li><details>
+            <summary>Data stored in key and value format, which costs 40mb </summary>
+            <pre>
+                {"school": "HARI LEELA KHUBANI HARJANI PUBLIC SR SS,VAISHALI NAGAR,AJMER", 
+                "name": "ADITYA CHOPRA", 
+                "roll_no": "1500305", 
+                "fname": "HANSRAJ CHOPRA", 
+                "mname": "SEEMA CHOPRA", 
+                "percent": " 94.20", 
+                "marks": " 471", 
+                "district": "101", 
+            }
+            </pre>
+        </details> </li>
+        <li><details>
+            <summary>Data stored in key and value format, which costs 30mb </summary>
+            <p> here i create a maping for school code to school names, and remove its name from db.</p>
+            <pre>
+                {
+                "name": "ADITYA CHOPRA", 
+                "roll_no": "1500305", 
+                "fname": "HANSRAJ CHOPRA", 
+                "mname": "SEEMA CHOPRA", 
+                "percent": " 94.20", 
+                "marks": " 471", 
+                "district": "101", 
+                "s-code": "1010417"
+            }
+            </pre>
+        </details> </li>
+        <li><details>
+            <summary>Data stored in key and value format, which costs 10mb </summary>
+            <p>here i removed fathers and mothers name from the db because i don't want to reveal.
+                also convert this key value pair to array.
+            </p>
+            <pre>
+                [94.2, "ADITYA CHOPRA", 1500305, 101, 1010417]
+            </pre>
+        </details> </li>
+        <li><details>
+            <summary>Data stored in key and value format, which costs 7.7mb </summary>
+            <p>here i convert the array to string.
+            </p>
+            <pre>
+                "94.210115003051010417ADITYA CHOPRA"
+            </pre>
+        </details> </li>
+        <li><details>
+            <summary>remove . and one digit more, which costs 7.3mb </summary>
+            <p>here i removed point from the percentage and remove one digit from districtand make it start 11 instead of 101.</p>
+            <pre>
+                "9421115003051010417ADITYA CHOPRA"
+            </pre>
+        </details> </li>
+        <li><details>
+            <summary>applied delta compression which costs 5.3mb </summary>
+            <p>delta compression was awesome for sequensial data like roll_no. and school code.</p>
+            <pre>
+                "94211305 10417 ADITYA CHOPRA"
+            </pre>
+        </details> </li>
+        
+       
+    </ol>
+</body>
+</html>
