@@ -18,6 +18,7 @@ import { cache } from "./data/cache.js"
 let count = 0;
 // variable used to create single page on the view
 let current_id = "";
+let notty_id = "";
 
 // input fielsd
 let inputDistrict = document.getElementById("select-district");
@@ -26,8 +27,22 @@ let inputMin = document.getElementById("min-range");
 let inputMax = document.getElementById("max-range");
 
 
+//**********************NOTIFIACTION ******************** */
+
+let notty = document.querySelector(".notty");
+let notify = function(message){
+    clearTimeout(notty_id);
+    notty.innerHTML = message;
+    notty.classList.add("show-notty")
+    notty_id = setTimeout(() => {
+        notty.classList.remove("show-notty")
+    },3000);
+}
+notify(" LOADING....")
+
 // ******************INITIALIZATION**************
 window.addEventListener('load', (event) => {
+    notify("WELOCME, Now try any input")
     console.log('page is fully loaded');
     let roll_no = 1500000;
     let school = 0;
@@ -54,7 +69,7 @@ window.addEventListener('load', (event) => {
 console.log(db[0],cache["district-code"]);
 
 
-let distOption = '<option value="">--------   none   --------</option>';
+let distOption = '<option value="">--------   NONE   --------</option>';
 let keys = Object.keys(cache["district-code"])
 for(let key of keys){
     distOption+=`<option value=${key}>${cache["district-code"][key]}</option>`
@@ -63,13 +78,21 @@ inputDistrict.innerHTML = distOption
 // value of schools will be selected as district-select will change.
 inputDistrict.addEventListener('change', () => {
     console.log(inputDistrict.value)
-    let schOption =  `<option value="">--------   none   --------</option>`;
+    let schOption =  `<option value="">--------   NONE   --------</option>`;
     keys = Object.keys(cache["school-code"][inputDistrict.value])
+    let schools = []
     for(let key of keys){
-        schOption+=`<option value=${key}>${cache["school-code"][inputDistrict.value][key]}</option>`
+        schools.push(cache["school-code"][inputDistrict.value][key]);
+    }
+    schools.sort();
+    console.log(schools);
+    for(let i in keys){
+        schOption+=`<option value=${keys[i]}>${schools[i]}</option>`
     }
     inputSchool.innerHTML = schOption
   });
+
+// ********** POST CREATINON FUNCTIONS **************  
 // fuction for creating pages and single post
 
 // this function create single post.
@@ -86,7 +109,7 @@ let createPost = async function(student){
 // this will create page for array of index.
 let createPage = async function(posts){
     // console.log(posts,start);
-    console.log("post creation start");
+    // console.log("post creation start");
     let count = 0;
     if(posts.length>0){
         current_id = setInterval(function(){
@@ -95,10 +118,19 @@ let createPage = async function(posts){
             if(count>posts.length){
                 clearInterval(current_id);
             }
-            console.log(count)
-        },100)
-        console.log("post creation end")
-    } else console.log(" array has 0 items so page wont create.")
+            if(count%40==0){
+                notify(" LOADING....")
+            }
+            if(count==posts.length-5){
+                notify(" page is loaded ")
+            }
+            // console.log(count)
+        },50)
+        // console.log("post creation end")
+    } else {
+        console.log(" array has 0 items so page wont create.")
+        notify(" NO student found ");
+    }
 }
 
 // range will be handled by this only 
@@ -150,7 +182,7 @@ let rangeHandler = async function(indexArray,min,max,type,district,school){
     createPage(posts);
 }
 
-
+//******************  CONTROLLER OF THIS DASHBOARD *********** */
 // this is event listner and also validate wrong inputs here
 document.getElementById("get-result").addEventListener('click',function(){
     clearInterval(current_id);
@@ -159,7 +191,7 @@ document.getElementById("get-result").addEventListener('click',function(){
     let school = inputSchool.value;
     let district = inputDistrict.value;
 // cases1 range is 0 to 100;
-    if(!isNaN(minRange) && minRange<=36 && !isNaN(maxRange) && maxRange===100 && district){
+    if(!isNaN(minRange) && minRange<=59 && !isNaN(maxRange) && maxRange===100 && district){
         //subcase1: if schooland district is selected
         if(school && district){
             if(cache[district] && cache[district][school]){
@@ -176,7 +208,10 @@ document.getElementById("get-result").addEventListener('click',function(){
                     </div>`;
                 document.querySelector(".features").innerHTML = first_post;
                 createPage(posts);
-            }else console.log("school or district is wrong")
+            }else{
+                console.log("school or district is wrong");
+                notify(" school or district is wrong. CALL 8477001129")
+            }
         //subcase2: if only district is selected
         }else if(district){
             if(cache["district"][district]){
@@ -190,7 +225,10 @@ document.getElementById("get-result").addEventListener('click',function(){
                     </div>`;
                 document.querySelector(".features").innerHTML = first_post;
                 createPage(posts);
-            }else console.log("wrong district")
+            }else{
+                console.log("wrong district")
+                notify(" district is wrong. CALL 8477001129")
+            }
         //subcase3: if nothing is selected
         }else console.log("district is not selected")
     }
@@ -207,13 +245,19 @@ document.getElementById("get-result").addEventListener('click',function(){
                 console.log("school /district/range is selected")
                 // creating total count set
                 rangeHandler(cache[district][school],minRange,maxRange,1,district,school);
-            }else console.log("school or district is wrong")
+            }else{
+                console.log("school or district is wrong");
+                notify(" school or district is wrong. CALL 8477001129")
+            }
         //subcase2: if range and district is selected
         }else if(district){
             if(cache["district"][district]){
                 console.log("range and district is selected");
                 rangeHandler(cache["district"][district],minRange,maxRange,2,district);
-            }else console.log("wrong district")
+            }else{
+                console.log("wrong district")
+                notify(" district is wrong. CALL 8477001129")
+            }
         //subcase3: if nothing is selected
         }else{
             console.log("range is given")
@@ -222,8 +266,11 @@ document.getElementById("get-result").addEventListener('click',function(){
     }
     else{
         console.log("some technical issue is occured")
+        notify("Change range a little")
     }
 })
+
+
 
 
 
