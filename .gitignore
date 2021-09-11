@@ -1,4 +1,5 @@
 /data/cache.js
-/data/db.js
 /data/precache
 /data/predb
+/scraping-and-preprocessing/preprocessed
+/scraping-and-preprocessing/raw_data
